@@ -106,6 +106,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
+        SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("USERNAME", email);
+        editor.putString("PASSWORD",password);
+        editor.apply();
+
         boolean cancel = false;
         View focusView = null;
 
@@ -265,11 +271,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("USERNAME", mEmail);
-                editor.putString("PASSWORD",mPassword);
-                editor.apply();
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));

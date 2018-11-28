@@ -18,7 +18,10 @@ public class HeavenHR implements IHeavenHR,Parcelable {
     private String HEAVEN_SESSION = "";
     private String CONSTANTS = "";
 
-    private List<Cookie> mCookies = new ArrayList<>();
+    private static final String BASE_URL = "https://www.heavenhr.com/";
+    private static final String HOST = "www.heavenhr.com";
+
+    private ArrayList<Cookie> mCookies = new ArrayList<>();
 
     public HeavenHR(){
 
@@ -46,7 +49,10 @@ public class HeavenHR implements IHeavenHR,Parcelable {
                 .cookieJar(new CookieJar() {
                     @Override
                     public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-                        mCookies = cookies;
+                        for (Cookie cookie : cookies) {
+                            if(!mCookies.contains(cookies))
+                                mCookies.add(cookie);
+                        }
                     }
 
                     @Override
@@ -61,9 +67,9 @@ public class HeavenHR implements IHeavenHR,Parcelable {
 
         RequestBody body = RequestBody.create(mediaType,"_username="+username+"&_password="+password);
         Request request = new Request.Builder()
-                .url("https://www.heavenhr.com/login_check")
+                .url(BASE_URL+"login_check")
                 .post(body)
-                .addHeader("Host", "www.heavenhr.com")
+                .addHeader("Host", HOST)
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .addHeader("cache-control", "no-cache")
                 .build();
@@ -71,6 +77,7 @@ public class HeavenHR implements IHeavenHR,Parcelable {
             Response response = client
                     .newCall(request)
                     .execute();
+            String responseBody = response.body().toString();
             if (response.code() == 200 )
                 return Authenticate();
             return false;
@@ -121,11 +128,10 @@ public class HeavenHR implements IHeavenHR,Parcelable {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("https://api.heavenhr.com/api/v1/users/authenticate")
+                .url(BASE_URL+"api/v1/users/authenticate")
                 .get()
                 .addHeader("Cookie", cookieString)
                 .addHeader("cache-control", "no-cache")
-                .addHeader("Postman-Token", "9f737c7a-3e71-4dbc-9df7-fb2ad35ca147")
                 .build();
 
         try {
