@@ -70,15 +70,18 @@ public class HeavenHR implements IHeavenHR, Parcelable {
             String urlUsername = URLEncoder.encode(username, StandardCharsets.UTF_8.toString());
             String urlPassword = URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
             MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-            String content = "_username=" + urlUsername + "&_password=" + urlPassword;
+            String content = "_username=" + urlUsername + "&_password=" + urlPassword+"&signIn=&_target_path=login_entry";
 
             RequestBody body = RequestBody.create(mediaType, content);
             Request request = new Request.Builder()
                     .url(BASE_URL + "login_check")
-                    .post(body)
-                    .addHeader("Host", HOST)
+                    .addHeader("Host","www.heavenhr.com")
+                    .addHeader("Accept"," text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                    .addHeader("Accept-Encoding","deflate, br")
+                    .addHeader("cache-control", "no-cache")
                     .addHeader("Content-Type", "application/x-www-form-urlencoded")
                     .addHeader("cache-control", "no-cache")
+                    .post(body)
                     .build();
 
             Response response = client
@@ -133,9 +136,12 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
         Request request = new Request.Builder()
                 .url(BASE_URL + "api/v1/users/authenticate")
-                .get()
+                .addHeader("Host","api.heavenhr.com")
+                .addHeader("Accept","application/json, text/plain, */*")
+                .addHeader("Accept-Encoding","deflate, br")
                 .addHeader("Cookie", cookieString)
                 .addHeader("cache-control", "no-cache")
+                .get()
                 .build();
 
         try {
