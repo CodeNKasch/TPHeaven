@@ -2,8 +2,12 @@ package local.dotprint.tpheaven;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.HttpUrl;
@@ -13,7 +17,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class HeavenHR implements IHeavenHR,Parcelable {
+public class HeavenHR implements IHeavenHR, Parcelable {
 
     private String HEAVEN_SESSION = "";
     private String CONSTANTS = "";
@@ -23,7 +27,7 @@ public class HeavenHR implements IHeavenHR,Parcelable {
 
     private ArrayList<Cookie> mCookies = new ArrayList<>();
 
-    public HeavenHR(){
+    public HeavenHR() {
 
     }
 
@@ -50,7 +54,7 @@ public class HeavenHR implements IHeavenHR,Parcelable {
                     @Override
                     public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
                         for (Cookie cookie : cookies) {
-                            if(!mCookies.contains(cookies))
+                            if (!mCookies.contains(cookies))
                                 mCookies.add(cookie);
                         }
                     }
@@ -62,28 +66,29 @@ public class HeavenHR implements IHeavenHR,Parcelable {
                 })
                 .build();
 
-
-        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-
-        RequestBody body = RequestBody.create(mediaType,"_username="+username+"&_password="+password);
-        Request request = new Request.Builder()
-                .url(BASE_URL+"login_check")
-                .post(body)
-                .addHeader("Host", HOST)
-                .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                .addHeader("cache-control", "no-cache")
-                .build();
         try {
+            String urlUsername = URLEncoder.encode(username, StandardCharsets.UTF_8.toString());
+            String urlPassword = URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
+            MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+            String content = "_username=" + urlUsername + "&_password=" + urlPassword;
+
+            RequestBody body = RequestBody.create(mediaType, content);
+            Request request = new Request.Builder()
+                    .url(BASE_URL + "login_check")
+                    .post(body)
+                    .addHeader("Host", HOST)
+                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                    .addHeader("cache-control", "no-cache")
+                    .build();
+
             Response response = client
                     .newCall(request)
                     .execute();
-            String responseBody = response.body().toString();
-            if (response.code() == 200 )
+            String responseBody = response.body().string();
+            if (response.code() == 200)
                 return Authenticate();
             return false;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -118,17 +123,16 @@ public class HeavenHR implements IHeavenHR,Parcelable {
         // TODO : save object
     }
 
-    private boolean Authenticate()
-    {
+    private boolean Authenticate() {
         String cookieString = "";
         for (Cookie cookie : mCookies) {
-           cookieString =cookieString +  cookie.name()+"="+cookie.value()+ ";";
+            cookieString = cookieString + cookie.name() + "=" + cookie.value() + ";";
         }
 
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url(BASE_URL+"api/v1/users/authenticate")
+                .url(BASE_URL + "api/v1/users/authenticate")
                 .get()
                 .addHeader("Cookie", cookieString)
                 .addHeader("cache-control", "no-cache")
@@ -137,9 +141,8 @@ public class HeavenHR implements IHeavenHR,Parcelable {
         try {
             Response response = client.newCall(request).execute();
             return response.code() == 200;
+        } catch (Exception e) {
         }
-        catch (Exception e)
-        {}
         return false;
     }
 }
