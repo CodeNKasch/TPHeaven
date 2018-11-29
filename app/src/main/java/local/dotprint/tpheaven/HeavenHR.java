@@ -25,10 +25,10 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     private static final String BASE_URL = "https://www.heavenhr.com/";
     private static final String HOST = "www.heavenhr.com";
 
-    private ArrayList<Cookie> mCookies = new ArrayList<>();
+    private TPCookieJar cookieJar;
 
     public HeavenHR() {
-
+        cookieJar = new TPCookieJar();
     }
 
     protected HeavenHR(Parcel in) {
@@ -50,20 +50,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     @Override
     public boolean Login(String username, String password) {
         OkHttpClient client = new OkHttpClient.Builder()
-                .cookieJar(new CookieJar() {
-                    @Override
-                    public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-                        for (Cookie cookie : cookies) {
-                            if (!mCookies.contains(cookies))
-                                mCookies.add(cookie);
-                        }
-                    }
-
-                    @Override
-                    public List<Cookie> loadForRequest(HttpUrl url) {
-                        return mCookies;
-                    }
-                })
+                .cookieJar(cookieJar)
                 .build();
 
         try {
@@ -127,22 +114,22 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     }
 
     private boolean Authenticate() {
+        String url= "https://api.heavenhr.com/api/v1/users/authenticate";
         String cookieString = "";
-        for (Cookie cookie : mCookies) {
+        for (Cookie cookie : cookieJar.loadForRequest(HttpUrl.parse(url))) {
             cookieString = cookieString + cookie.name() + "=" + cookie.value() + ";";
         }
 
         OkHttpClient client = new OkHttpClient();
-
         Request request = new Request.Builder()
-                .url("https://api.heavenhr.com/api/v1/users/authenticate")
+                .url(url)
                 .addHeader("Host","api.heavenhr.com")
                 .addHeader("Accept","application/json, text/plain, */*")
-                .addHeader("Accept-Encoding","deflate, br")
                 .addHeader("Cookie", cookieString)
                 .addHeader("cache-control", "no-cache")
                 .get()
                 .build();
+
 
         try {
             Response response = client.newCall(request).execute();
