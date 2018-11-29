@@ -135,7 +135,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "api/v1/users/authenticate")
+                .url("https://api.heavenhr.com/api/v1/users/authenticate")
                 .addHeader("Host","api.heavenhr.com")
                 .addHeader("Accept","application/json, text/plain, */*")
                 .addHeader("Accept-Encoding","deflate, br")
