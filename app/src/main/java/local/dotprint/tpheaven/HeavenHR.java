@@ -24,16 +24,12 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     private String HEAVEN_SESSION = "";
     private String CONSTANTS = "";
 
-
-    private static final String BASE_URL = "https://www.heavenhr.com/";
-    private static final String HOST = "www.heavenhr.com";
-
     public String UserData = "";
 
-    private TPCookieJar cookieJar;
+    private Network network;
 
     public HeavenHR() {
-        cookieJar = new TPCookieJar();
+        network = new Network();
     }
 
     protected HeavenHR(Parcel in) {
@@ -54,33 +50,18 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
     @Override
     public boolean Login(String username, String password) {
-
-
-        OkHttpClient client1 = new OkHttpClient.Builder()
-                .cookieJar(cookieJar)
-                .build();
-        try {
-            String urlUsername = URLEncoder.encode(username, StandardCharsets.UTF_8.toString());
-            String urlPassword = URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
-            String content = "_username=" + urlUsername + "&_password=" + urlPassword;
-
-            MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-            RequestBody body1 = RequestBody.create(mediaType, content);
-
-            Request request1 = new Request.Builder()
-                    .url(BASE_URL + "login_check")
-                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                    .post(body1)
-                    .build();
-            for (int i = 0; i < 2; i++) {
-
-                Response response1 = client1.newCall(request1).execute();
-                boolean login1 = response1.body().string().contains("Login");
-            }
-            return Authenticate();
-        } catch (Exception e) {
-            return false;
+        boolean success = false;
+        for (int i = 0; i < 2; i++) {
+            success = network.Login(username, password);
+            if (success)
+                break;
         }
+        if (success)
+        {
+            UserData = network.Authenticate();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -113,36 +94,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
         // TODO : save object
     }
 
-    private boolean Authenticate() {
-        String url = "https://api.heavenhr.com/api/v1/users/authenticate";
 
 
-        try {
-            OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder()
-                    .url(url)
-                    .addHeader("Cookie", CookieString())
-                    .get()
-                    .build();
 
-            Response response = client.newCall(request).execute();
-            if (response.code() == 200) {
-                UserData = response.body().string();
-
-                return true;
-            }
-        } catch (Exception e) {
-        }
-        return false;
-    }
-
-    private String CookieString() throws UnsupportedEncodingException {
-        String cookieString = "";
-        for (Cookie cookie : cookieJar.loadForRequest(HttpUrl.parse(""))) {
-            cookieString = cookieString + cookie.name() + "=" +
-                    URLEncoder.encode(cookie.value(), StandardCharsets.UTF_8.toString())
-                    + ";";
-        }
-        return cookieString;
-    }
 }
