@@ -1,4 +1,4 @@
-package local.dotprint.tpheaven;
+package local.dotprint.tpheaven.Activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -29,6 +29,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import local.dotprint.tpheaven.HeavenHR;
+import local.dotprint.tpheaven.R;
 
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
