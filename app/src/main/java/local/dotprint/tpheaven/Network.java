@@ -3,7 +3,6 @@ package local.dotprint.tpheaven;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-
 import okhttp3.Cookie;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -48,8 +47,6 @@ public class Network {
 
     public String Authenticate() {
         String url = "https://api.heavenhr.com/api/v1/users/authenticate";
-
-
         try {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
@@ -70,11 +67,49 @@ public class Network {
     private String CookieString() throws UnsupportedEncodingException {
         String cookieString = "";
         for (Cookie cookie : cookieJar.loadForRequest(HttpUrl.parse(""))) {
-            cookieString = cookieString + cookie.name() + "=" +
-                    URLEncoder.encode(cookie.value(), StandardCharsets.UTF_8.toString())
-                    + ";";
+            cookieString = cookieString + cookie.name() + "=" + URLEncode(cookie.value()) + ";";
         }
         return cookieString;
+    }
+
+    public String TogglePause(String JobID)
+    {//_LUvMkrT5ogdK5NWq6HQ5Lg_
+        String url = "https://www.heavenhr.com/time-tracking/ajax/stopwatch/job/"+JobID+"/pause";
+        try {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("Cookie", CookieString())
+                    .get()
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return response.body().string();
+            }
+        } catch (Exception e) {
+        }
+        return "";
+    }
+
+    public String ToggleStartStop(String JobID)
+    {//_LUvMkrT5ogdK5NWq6HQ5Lg_
+        String url = "https://www.heavenhr.com/time-tracking/ajax/stopwatch/job/"+JobID+"/toggle";
+        try {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("Cookie", CookieString())
+                    .get()
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return response.body().string();
+            }
+        } catch (Exception e) {
+        }
+        return "";
     }
 
     private String URLEncode(String raw) {
