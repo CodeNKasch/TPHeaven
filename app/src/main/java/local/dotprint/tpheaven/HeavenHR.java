@@ -3,21 +3,7 @@ package local.dotprint.tpheaven;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Cookie;
-import okhttp3.CookieJar;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import local.dotprint.tpheaven.Network.HRNetwork;
 
 public class HeavenHR implements IHeavenHR, Parcelable {
 
@@ -26,10 +12,10 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
     public String UserData = "";
 
-    private Network network;
+    private HRNetwork network;
 
     public HeavenHR() {
-        network = new Network();
+        network = new HRNetwork();
     }
 
     protected HeavenHR(Parcel in) {
