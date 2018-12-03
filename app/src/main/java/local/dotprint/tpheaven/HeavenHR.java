@@ -7,8 +7,11 @@ import local.dotprint.tpheaven.Network.HRNetwork;
 
 public class HeavenHR implements IHeavenHR, Parcelable {
 
-    private String HEAVEN_SESSION = "";
-    private String CONSTANTS = "";
+    private String JobId;
+    private String PersonId;
+    private String UserId;
+    private String trackingUserId;
+    private String trackingCompanyId;
 
     public String UserData = "";
 
@@ -42,8 +45,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
             if (success)
                 break;
         }
-        if (success)
-        {
+        if (success) {
             UserData = network.Authenticate();
             return true;
         }
@@ -51,8 +53,12 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     }
 
     @Override
-    public void Pause() {
-
+    public boolean Pause() {
+        if (JobId != null && JobId.trim().isEmpty()) {
+            network.TogglePause(JobId);
+            return true;
+        } else
+            return false;
     }
 
     @Override
@@ -77,10 +83,8 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        // TODO : save object
+
     }
-
-
 
 
 }

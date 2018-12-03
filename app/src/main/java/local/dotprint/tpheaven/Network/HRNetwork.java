@@ -70,6 +70,11 @@ public class HRNetwork {
         return "";
     }
 
+    public String GetWorkingTimes(String JobID) {
+        String url = "https://www.heavenhr.com/api/v1/workingtimes/overtime/saldo/summary/employee/" + JobID + "?endDate=2018-11-30";
+        return "";
+    }
+
     private String CookieString() throws UnsupportedEncodingException {
         String cookieString = "";
         for (Cookie cookie : cookieJar.loadForRequest(HttpUrl.parse(""))) {
@@ -124,3 +129,8 @@ public class HRNetwork {
         }
     }
 }
+
+/* GET https://www.heavenhr.com/api/v1/workingtimes/overtime/updates/?employeeJobId=_LUvMkrT5ogdK5NWq6HQ5Lg_&page=0&pageSize=25&sortBy=-compensationDate
+   GET https://api.heavenhr.com/api/v1/users/checkSessionIsExpired
+
+ */

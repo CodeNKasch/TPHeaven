@@ -10,12 +10,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import local.dotprint.tpheaven.HeavenHR;
 import local.dotprint.tpheaven.R;
 
 public class TrackingActivity extends AppCompatActivity {
 
     private String UserData = "";
-
+    private HeavenHR mHeaven;
     private Button pauseButton;
     private Button startButton;
 
@@ -24,7 +25,6 @@ public class TrackingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         SetupUI();
         GetDataFromIntent();
-
     }
 
     private void SetupUI(){
@@ -36,7 +36,8 @@ public class TrackingActivity extends AppCompatActivity {
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(!mHeaven.Pause())
+                    finishActivity(0);
             }
         });
         startButton =  (Button) findViewById(R.id.start_stop_button);
@@ -51,8 +52,7 @@ public class TrackingActivity extends AppCompatActivity {
     private void GetDataFromIntent() {
         try {
             Intent intent = getIntent();
-            UserData = intent.getStringExtra("UserData");
-
+            UserData = intent.getStringExtra(getString(R.string.put_extra_user_data));
             TextView view = (TextView) findViewById(R.id.user_data);
             view.setText(UserData);
         } catch (Exception e) {

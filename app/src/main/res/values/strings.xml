@@ -103,4 +103,7 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="action_settings">Settings</string>
+    <string name="put_extra_user_data">USERDATA</string>
+    <string name="pref_email">EMAIL</string>
+    <string name="pref_passwd">PASSWORD</string>
 </resources>

@@ -78,13 +78,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onStart() {
         super.onStart();
         SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
-        String username = preferences.getString("USERNAME","");
-        String password = preferences.getString("PASSWORD", "");
+        String email = preferences.getString(getString(R.string.pref_email),"");
+        String password = preferences.getString(getString(R.string.pref_passwd), "");
 
-        mEmailView.setText(username);
+        mEmailView.setText(email);
         mPasswordView.setText(password);
 
-        if(username != null && !username.trim().isEmpty() &&
+        if(email != null && !email.trim().isEmpty() &&
                 password != null && !password.trim().isEmpty())
             attemptLogin();
     }
@@ -92,8 +92,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void OpenTrackingActivity(){
         Intent intent = new Intent(this,TrackingActivity.class);
-        intent.putExtra("UserData", mHeaven.UserData);
-        startActivity(intent);
+        intent.putExtra(getString(R.string.put_extra_user_data) , mHeaven.UserData);
+        startActivityForResult(intent,R.id.startTracking);
     }
 
 
@@ -116,8 +116,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("USERNAME", email);
-        editor.putString("PASSWORD",password);
+        editor.putString(getString(R.string.pref_email), email);
+        editor.putString(getString(R.string.pref_passwd),password);
         editor.apply();
 
         boolean valid = ValidateInput(email,password);
