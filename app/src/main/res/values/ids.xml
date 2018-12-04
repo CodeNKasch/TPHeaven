@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Const ID -->
-    <item name="startTracking" type="id"></item>
+    <item type="id" name="startTracking"/>
+    <item type="id" name="finishTrackingRelogin"/>
+    <item type="id" name="finishTrackingFailed"/>
 </resources>
