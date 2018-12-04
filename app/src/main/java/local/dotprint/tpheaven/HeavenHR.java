@@ -62,13 +62,12 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     }
 
     @Override
-    public void Start() {
-
-    }
-
-    @Override
-    public void Stop() {
-
+    public boolean Start() {
+        if (JobId != null && JobId.trim().isEmpty()) {
+            network.ToggleStartStop(JobId);
+            return true;
+        } else
+            return false;
     }
 
     @Override

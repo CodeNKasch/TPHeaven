@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -164,6 +165,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return false;
         }
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == R.id.finishTrackingFailed)
+        {
+            // do stuff if Tracking closed with exit failed (no relogin)
+        }
     }
 
     /**

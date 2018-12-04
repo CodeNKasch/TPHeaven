@@ -2,8 +2,6 @@ package local.dotprint.tpheaven.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -37,7 +35,7 @@ public class TrackingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!mHeaven.Pause())
-                    finishActivity(0);
+                    finishActivity(R.id.finishTrackingFailed);
             }
         });
         startButton =  (Button) findViewById(R.id.start_stop_button);
