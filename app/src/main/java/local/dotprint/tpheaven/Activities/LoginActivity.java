@@ -36,6 +36,8 @@ import local.dotprint.tpheaven.R;
 
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
+    final short START_TRACKING = 1;
+
     private HeavenHR mHeaven = new HeavenHR();
     private UserLoginTask mAuthTask = null;
 
@@ -94,7 +96,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void OpenTrackingActivity(){
         Intent intent = new Intent(this,TrackingActivity.class);
         intent.putExtra(getString(R.string.put_extra_user_data) , mHeaven.UserData);
-        startActivityForResult(intent,R.id.startTracking);
+        startActivityForResult(intent, START_TRACKING);
     }
 
 
@@ -170,6 +172,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == 0) {
+            finish();
+            return;
+        }
+
         if(resultCode == R.id.finishTrackingFailed)
         {
             // do stuff if Tracking closed with exit failed (no relogin)
