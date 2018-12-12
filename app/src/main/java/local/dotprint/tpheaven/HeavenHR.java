@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import local.dotprint.tpheaven.Network.HRNetwork;
+import local.dotprint.tpheaven.Network.ParseableCookie;
 
 public class HeavenHR implements IHeavenHR, Parcelable {
 
@@ -13,7 +14,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     private String trackingUserId;
     private String trackingCompanyId;
 
-
+    private ParseableCookie[] parseableCookies;
     public String UserData = "";
 
     private HRNetwork network;
@@ -83,7 +84,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
+        dest.writeTypedArray(parseableCookies,0);
     }
 
 

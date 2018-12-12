@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import local.dotprint.tpheaven.TPCookieJar;
 import okhttp3.Cookie;
@@ -77,7 +78,7 @@ public class HRNetwork {
 
     private String CookieString() throws UnsupportedEncodingException {
         String cookieString = "";
-        for (Cookie cookie : cookieJar.loadForRequest(HttpUrl.parse(""))) {
+        for (Cookie cookie : GetCookies()) {
             cookieString = cookieString + cookie.name() + "=" + URLEncode(cookie.value()) + ";";
         }
         return cookieString;
@@ -127,6 +128,14 @@ public class HRNetwork {
         } catch (Exception e) {
             return "";
         }
+    }
+
+    public List<Cookie> GetCookies(){
+        return cookieJar.loadForRequest(HttpUrl.parse("https://www.heavenhr.com/"));
+    }
+
+    public void SetCookies(List<Cookie> cookies){
+        cookieJar.saveFromResponse(HttpUrl.parse("https://www.heavenhr.com/"),cookies);
     }
 }
 
