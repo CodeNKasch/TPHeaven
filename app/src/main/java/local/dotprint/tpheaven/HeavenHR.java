@@ -29,8 +29,8 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
     protected HeavenHR(Parcel in) {
         network = new HRNetwork();
-       UserData = in.readString();
-       parseableCookies = in.createTypedArray(ParseableCookie.CREATOR);
+        UserData = in.readString();
+        parseableCookies = in.createTypedArray(ParseableCookie.CREATOR);
         List<Cookie> cookies = new ArrayList<>();
         for (ParseableCookie parcel : parseableCookies) {
             cookies.add(parcel.cookie());
@@ -98,12 +98,9 @@ public class HeavenHR implements IHeavenHR, Parcelable {
         dest.writeString(UserData);
         List<Cookie> cookies = network.GetCookies();
         parseableCookies = new ParseableCookie[cookies.size()];
-        for(Cookie cookie : cookies)
-        {
+        for (Cookie cookie : cookies) {
             parseableCookies[cookies.indexOf(cookie)] = new ParseableCookie(cookie);
         }
-        dest.writeTypedArray(parseableCookies,0);
+        dest.writeTypedArray(parseableCookies, 0);
     }
-
-
 }

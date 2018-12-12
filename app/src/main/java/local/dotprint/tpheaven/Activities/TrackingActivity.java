@@ -17,7 +17,6 @@ import local.dotprint.tpheaven.R;
 
 public class TrackingActivity extends AppCompatActivity {
 
-    private HeavenHR heavenHR;
     private HeavenHR mHeaven;
     private Button pauseButton;
     private Button startButton;
@@ -48,7 +47,8 @@ public class TrackingActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-
+                if(!mHeaven.Start())
+                    finishActivity(R.id.finishTrackingFailed);
             }
         });
 
@@ -58,8 +58,8 @@ public class TrackingActivity extends AppCompatActivity {
     private void GetDataFromIntent() {
         try {
             Intent intent = getIntent();
-            heavenHR = intent.getParcelableExtra(getString(R.string.put_extra_user_data));
-            mUserDataView.setText(heavenHR.UserData);
+            mHeaven = intent.getParcelableExtra(getString(R.string.put_extra_user_data));
+            mUserDataView.setText(mHeaven.UserData);
         } catch (Exception e) {
             e.getCause();
         }
