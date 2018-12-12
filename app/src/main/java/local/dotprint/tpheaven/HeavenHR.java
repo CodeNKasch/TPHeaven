@@ -13,6 +13,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     private String trackingUserId;
     private String trackingCompanyId;
 
+
     public String UserData = "";
 
     private HRNetwork network;
