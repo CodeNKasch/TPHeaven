@@ -91,7 +91,7 @@ public class HRNetwork {
             Request request = new Request.Builder()
                     .url(url)
                     .addHeader("Cookie", CookieString())
-                    .get()
+                    .post(RequestBody.create(MediaType.parse("application/json"), ""))
                     .build();
 
             Response response = client.newCall(request).execute();
@@ -110,7 +110,7 @@ public class HRNetwork {
             Request request = new Request.Builder()
                     .url(url)
                     .addHeader("Cookie", CookieString())
-                    .get()
+                    .post(RequestBody.create(MediaType.parse("application/json"), ""))
                     .build();
 
             Response response = client.newCall(request).execute();
@@ -118,6 +118,7 @@ public class HRNetwork {
                 return response.body().string();
             }
         } catch (Exception e) {
+            e.getCause();
         }
         return "";
     }

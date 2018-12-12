@@ -2,6 +2,7 @@ package local.dotprint.tpheaven.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -39,16 +40,14 @@ public class TrackingActivity extends AppCompatActivity {
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!mHeaven.Pause())
-                    finishActivity(R.id.finishTrackingFailed);
+                new PauseTask().execute((Void)null);
             }
         });
         startButton =  (Button) findViewById(R.id.start_stop_button);
         startButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(!mHeaven.Start())
-                    finishActivity(R.id.finishTrackingFailed);
+                new StartTask().execute((Void)null);
             }
         });
 
@@ -76,5 +75,42 @@ public class TrackingActivity extends AppCompatActivity {
                         TrackingActivity.super.onBackPressed();
                     }
                 }).create().show();
+    }
+
+    public class StartTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            return mHeaven.Start();
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if(!success)
+                finishActivity(R.id.finishTrackingFailed);
+        }
+
+        @Override
+        protected void onCancelled() {
+
+        }
+    }
+    public class PauseTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            return mHeaven.Pause();
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if(!success)
+                finishActivity(R.id.finishTrackingFailed);
+        }
+
+        @Override
+        protected void onCancelled() {
+
+        }
     }
 }

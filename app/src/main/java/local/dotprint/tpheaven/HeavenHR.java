@@ -3,6 +3,9 @@ package local.dotprint.tpheaven;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +39,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
             cookies.add(parcel.cookie());
         }
         network.SetCookies(cookies);
+        JobId = GetJobId();
     }
 
     public static final Creator<HeavenHR> CREATOR = new Creator<HeavenHR>() {
@@ -67,8 +71,8 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
     @Override
     public boolean Pause() {
-        if (JobId != null && JobId.trim().isEmpty()) {
-            network.TogglePause(JobId);
+        if (JobId != null && !JobId.trim().isEmpty()) {
+            String body = network.TogglePause(JobId);
             return true;
         } else
             return false;
@@ -76,8 +80,8 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
     @Override
     public boolean Start() {
-        if (JobId != null && JobId.trim().isEmpty()) {
-            network.ToggleStartStop(JobId);
+        if (JobId != null && !JobId.trim().isEmpty()) {
+            String body = network.ToggleStartStop(JobId);
             return true;
         } else
             return false;
@@ -102,5 +106,19 @@ public class HeavenHR implements IHeavenHR, Parcelable {
             parseableCookies[cookies.indexOf(cookie)] = new ParseableCookie(cookie);
         }
         dest.writeTypedArray(parseableCookies, 0);
+    }
+
+    public String GetJobId()
+    {
+        try {
+            JSONObject jobject = new JSONObject(UserData);
+            JSONArray data = (JSONArray) jobject.get("data");
+            String jobId  =  data.getJSONObject(0).get("jobId").toString();
+            return jobId;
+        }catch (Exception e)
+        {
+
+        }
+        return "";
     }
 }
