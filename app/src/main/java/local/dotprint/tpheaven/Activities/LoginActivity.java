@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void OpenTrackingActivity(){
         Intent intent = new Intent(this,TrackingActivity.class);
-        intent.putExtra(getString(R.string.put_extra_user_data) , mHeaven.UserData);
+        intent.putExtra(getString(R.string.put_extra_user_data) , mHeaven);
         startActivityForResult(intent, START_TRACKING);
     }
 

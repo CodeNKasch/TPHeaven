@@ -3,8 +3,12 @@ package local.dotprint.tpheaven;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import local.dotprint.tpheaven.Network.HRNetwork;
 import local.dotprint.tpheaven.Network.ParseableCookie;
+import okhttp3.Cookie;
 
 public class HeavenHR implements IHeavenHR, Parcelable {
 
@@ -24,7 +28,14 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     }
 
     protected HeavenHR(Parcel in) {
-
+        network = new HRNetwork();
+       UserData = in.readString();
+       parseableCookies = in.createTypedArray(ParseableCookie.CREATOR);
+        List<Cookie> cookies = new ArrayList<>();
+        for (ParseableCookie parcel : parseableCookies) {
+            cookies.add(parcel.cookie());
+        }
+        network.SetCookies(cookies);
     }
 
     public static final Creator<HeavenHR> CREATOR = new Creator<HeavenHR>() {
@@ -84,6 +95,13 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(UserData);
+        List<Cookie> cookies = network.GetCookies();
+        parseableCookies = new ParseableCookie[cookies.size()];
+        for(Cookie cookie : cookies)
+        {
+            parseableCookies[cookies.indexOf(cookie)] = new ParseableCookie(cookie);
+        }
         dest.writeTypedArray(parseableCookies,0);
     }
 

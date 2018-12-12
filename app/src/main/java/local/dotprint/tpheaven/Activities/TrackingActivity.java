@@ -9,22 +9,25 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import java.io.Console;
 
 import local.dotprint.tpheaven.HeavenHR;
 import local.dotprint.tpheaven.R;
 
 public class TrackingActivity extends AppCompatActivity {
 
-    private String UserData = "";
+    private HeavenHR heavenHR;
     private HeavenHR mHeaven;
     private Button pauseButton;
     private Button startButton;
+    private TextView mUserDataView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SetupUI();
+        mHeaven = new HeavenHR();
         GetDataFromIntent();
     }
 
@@ -48,16 +51,17 @@ public class TrackingActivity extends AppCompatActivity {
 
             }
         });
+
+        mUserDataView =findViewById(R.id.user_data);
     }
 
     private void GetDataFromIntent() {
         try {
             Intent intent = getIntent();
-            UserData = intent.getStringExtra(getString(R.string.put_extra_user_data));
-            TextView view = (TextView) findViewById(R.id.user_data);
-            view.setText(UserData);
+            heavenHR = intent.getParcelableExtra(getString(R.string.put_extra_user_data));
+            mUserDataView.setText(heavenHR.UserData);
         } catch (Exception e) {
-
+            e.getCause();
         }
     }
 
