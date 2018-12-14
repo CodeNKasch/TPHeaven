@@ -106,6 +106,24 @@ public class HeavenHR implements IHeavenHR, Parcelable {
             return false;
     }
 
+    public String Track(){
+        if(JobId != null && !JobId.trim().isEmpty())
+        {
+            String body = network.TimeTracking(JobId);
+            try {
+                JSONObject jobject = new JSONObject(body);
+                JSONArray data = (JSONArray) jobject.get("data");
+                Status = data.getJSONObject(0).get("status").toString();
+            }catch (Exception e)
+            {
+                return "CLOSED";
+            }
+            return Status;
+        }
+        else
+            return "no Job ID";
+    }
+
     @Override
     public StopWatchStatus GetStatus() {
         return null;

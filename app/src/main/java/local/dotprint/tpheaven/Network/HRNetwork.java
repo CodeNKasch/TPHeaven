@@ -1,5 +1,7 @@
 package local.dotprint.tpheaven.Network;
 
+import android.print.PrintJobId;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -111,6 +113,27 @@ public class HRNetwork {
                     .url(url)
                     .addHeader("Cookie", CookieString())
                     .post(RequestBody.create(MediaType.parse("application/json"), ""))
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return response.body().string();
+            }
+        } catch (Exception e) {
+            e.getCause();
+        }
+        return "";
+    }
+
+    public String TimeTracking(String JobId)
+    {
+        String url="https://www.heavenhr.com/time-tracking/ajax/stopwatch/job/"+JobId+"/current";
+        try {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("Cookie", CookieString())
+                    .get()
                     .build();
 
             Response response = client.newCall(request).execute();

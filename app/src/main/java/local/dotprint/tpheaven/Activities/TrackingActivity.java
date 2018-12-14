@@ -29,6 +29,7 @@ public class TrackingActivity extends AppCompatActivity {
         SetupUI();
         mHeaven = new HeavenHR();
         GetDataFromIntent();
+        new TrackingTask().execute((Void)null);
     }
 
     private void SetupUI(){
@@ -113,6 +114,19 @@ public class TrackingActivity extends AppCompatActivity {
         @Override
         protected void onCancelled() {
 
+        }
+    }
+
+    public class TrackingTask extends AsyncTask<Void,Void,String>{
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            return mHeaven.Track();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            mUserDataView.setText(s);
         }
     }
 }
