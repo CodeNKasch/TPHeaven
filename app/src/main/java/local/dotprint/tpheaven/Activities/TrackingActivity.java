@@ -86,6 +86,7 @@ public class TrackingActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            mUserDataView.setText(mHeaven.Status());
             if(!success)
                 finishActivity(R.id.finishTrackingFailed);
         }
@@ -104,6 +105,7 @@ public class TrackingActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            mUserDataView.setText(mHeaven.Status());
             if(!success)
                 finishActivity(R.id.finishTrackingFailed);
         }

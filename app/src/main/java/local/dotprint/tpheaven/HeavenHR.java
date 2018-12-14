@@ -16,6 +16,7 @@ import okhttp3.Cookie;
 public class HeavenHR implements IHeavenHR, Parcelable {
 
     private String JobId;
+    private String Status;
     private String PersonId;
     private String UserId;
     private String trackingUserId;
@@ -28,11 +29,13 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
     public HeavenHR() {
         network = new HRNetwork();
+        Status = "";
     }
 
     protected HeavenHR(Parcel in) {
         network = new HRNetwork();
         UserData = in.readString();
+        Status = in.readString();
         parseableCookies = in.createTypedArray(ParseableCookie.CREATOR);
         List<Cookie> cookies = new ArrayList<>();
         for (ParseableCookie parcel : parseableCookies) {
@@ -73,6 +76,14 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     public boolean Pause() {
         if (JobId != null && !JobId.trim().isEmpty()) {
             String body = network.TogglePause(JobId);
+            try {
+                JSONObject jobject = new JSONObject(body);
+                JSONArray data = (JSONArray) jobject.get("data");
+                Status = data.getJSONObject(0).get("status").toString();
+            }catch (Exception e)
+            {
+
+            }
             return true;
         } else
             return false;
@@ -82,6 +93,14 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     public boolean Start() {
         if (JobId != null && !JobId.trim().isEmpty()) {
             String body = network.ToggleStartStop(JobId);
+            try {
+                JSONObject jobject = new JSONObject(body);
+                JSONArray data = (JSONArray) jobject.get("data");
+                Status = data.getJSONObject(0).get("status").toString();
+            }catch (Exception e)
+            {
+
+            }
             return true;
         } else
             return false;
@@ -100,6 +119,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(UserData);
+        dest.writeString(Status);
         List<Cookie> cookies = network.GetCookies();
         parseableCookies = new ParseableCookie[cookies.size()];
         for (Cookie cookie : cookies) {
@@ -120,5 +140,9 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
         }
         return "";
+    }
+
+    public String Status(){
+        return Status;
     }
 }
