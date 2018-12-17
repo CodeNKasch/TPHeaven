@@ -1,5 +1,8 @@
 package local.dotprint.tpheaven.Network;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.print.PrintJobId;
 
 import java.io.IOException;

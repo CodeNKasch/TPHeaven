@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -49,6 +51,8 @@ public class LoginActivity extends AppCompatActivity {
     private View mLoginFormView;
     private Button mSignInButton;
 
+    private TextView mErrorText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +88,10 @@ public class LoginActivity extends AppCompatActivity {
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
+        mErrorText = findViewById(R.id.error_view);
+
     }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -121,6 +128,11 @@ public class LoginActivity extends AppCompatActivity {
 
         ResetErrors();
 
+        if(!HasInternet()) {
+            mErrorText.setText(getString(R.string.error_no_connection));
+            mErrorText.setVisibility(View.VISIBLE);
+            return;
+        }
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
@@ -152,6 +164,8 @@ public class LoginActivity extends AppCompatActivity {
     private void ResetErrors(){
         mEmailView.setError(null);
         mPasswordView.setError(null);
+        mErrorText.setText(getString(R.string.nulltext));
+        mErrorText.setVisibility(View.INVISIBLE);
     }
 
     private boolean ValidateInput(String email, String password)
@@ -199,6 +213,15 @@ public class LoginActivity extends AppCompatActivity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
+
+    public boolean HasInternet()
+    {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
