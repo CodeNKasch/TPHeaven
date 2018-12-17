@@ -45,6 +45,7 @@ public class TrackingActivity extends AppCompatActivity {
                 new PauseTask().execute((Void) null);
             }
         });
+
         startButton = (ImageButton) findViewById(R.id.start_stop_button);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +61,6 @@ public class TrackingActivity extends AppCompatActivity {
         try {
             Intent intent = getIntent();
             mHeaven = intent.getParcelableExtra(getString(R.string.put_extra_user_data));
-            mUserDataView.setText(mHeaven.UserData);
         } catch (Exception e) {
             e.getCause();
         }

@@ -12,6 +12,15 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/user_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:textSize="@dimen/text_margin"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"
+            android:text="@string/large_text" />
         <ImageButton
             android:id="@+id/start_stop_button"
             android:layout_width="match_parent"
@@ -23,13 +32,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Pause_Resume"/>
-
-        <TextView
-            android:id="@+id/user_data"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/text_margin"
-            android:text="@string/large_text" />
     </LinearLayout>
 
 
