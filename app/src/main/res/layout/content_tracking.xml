@@ -12,13 +12,13 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <Button
+        <ImageButton
             android:id="@+id/start_stop_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Start_Stop"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/pause_resume_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

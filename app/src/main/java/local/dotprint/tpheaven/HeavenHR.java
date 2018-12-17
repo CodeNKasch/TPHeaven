@@ -16,7 +16,7 @@ import okhttp3.Cookie;
 public class HeavenHR implements IHeavenHR, Parcelable {
 
     private String JobId;
-    private String Status;
+    private TrackingState Status;
     private String PersonId;
     private String UserId;
     private String trackingUserId;
@@ -29,13 +29,13 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
     public HeavenHR() {
         network = new HRNetwork();
-        Status = "";
+        Status = TrackingState.CLOSED;
     }
 
     protected HeavenHR(Parcel in) {
         network = new HRNetwork();
         UserData = in.readString();
-        Status = in.readString();
+        Status = TrackingState.valueOf(in.readString());
         parseableCookies = in.createTypedArray(ParseableCookie.CREATOR);
         List<Cookie> cookies = new ArrayList<>();
         for (ParseableCookie parcel : parseableCookies) {
@@ -79,7 +79,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
             try {
                 JSONObject jobject = new JSONObject(body);
                 JSONArray data = (JSONArray) jobject.get("data");
-                Status = data.getJSONObject(0).get("status").toString();
+                Status = TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
             }catch (Exception e)
             {
 
@@ -96,7 +96,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
             try {
                 JSONObject jobject = new JSONObject(body);
                 JSONArray data = (JSONArray) jobject.get("data");
-                Status = data.getJSONObject(0).get("status").toString();
+                Status = TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
             }catch (Exception e)
             {
 
@@ -106,22 +106,22 @@ public class HeavenHR implements IHeavenHR, Parcelable {
             return false;
     }
 
-    public String Track(){
+    public TrackingState Track(){
         if(JobId != null && !JobId.trim().isEmpty())
         {
             String body = network.TimeTracking(JobId);
             try {
                 JSONObject jobject = new JSONObject(body);
                 JSONArray data = (JSONArray) jobject.get("data");
-                Status = data.getJSONObject(0).get("status").toString();
+                Status = TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
+
             }catch (Exception e)
             {
-                return "CLOSED";
+                return TrackingState.CLOSED;
             }
-            return Status;
+
         }
-        else
-            return "no Job ID";
+        return Status;
     }
 
     @Override
@@ -137,7 +137,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(UserData);
-        dest.writeString(Status);
+        dest.writeString(Status.text);
         List<Cookie> cookies = network.GetCookies();
         parseableCookies = new ParseableCookie[cookies.size()];
         for (Cookie cookie : cookies) {
@@ -160,7 +160,30 @@ public class HeavenHR implements IHeavenHR, Parcelable {
         return "";
     }
 
-    public String Status(){
+    public TrackingState Status(){
         return Status;
+    }
+
+    public enum TrackingState {
+        CLOSED("CLOSED"),
+        RUNNING("RUNNING"),
+        PAUSED("PAUSED");
+
+        private final String text;
+
+        /**
+         * @param text
+         */
+        TrackingState(final String text) {
+            this.text = text;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Enum#toString()
+         */
+        @Override
+        public String toString() {
+            return text;
+        }
     }
 }

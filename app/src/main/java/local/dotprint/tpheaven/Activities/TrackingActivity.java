@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.io.Console;
@@ -19,8 +20,8 @@ import local.dotprint.tpheaven.R;
 public class TrackingActivity extends AppCompatActivity {
 
     private HeavenHR mHeaven;
-    private Button pauseButton;
-    private Button startButton;
+    private ImageButton pauseButton;
+    private ImageButton startButton;
     private TextView mUserDataView;
 
     @Override
@@ -29,30 +30,30 @@ public class TrackingActivity extends AppCompatActivity {
         SetupUI();
         mHeaven = new HeavenHR();
         GetDataFromIntent();
-        new TrackingTask().execute((Void)null);
+        new TrackingTask().execute((Void) null);
     }
 
-    private void SetupUI(){
+    private void SetupUI() {
         setContentView(R.layout.activity_tracking);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        pauseButton = (Button) findViewById(R.id.pause_resume_button);
+        pauseButton = (ImageButton) findViewById(R.id.pause_resume_button);
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new PauseTask().execute((Void)null);
+                new PauseTask().execute((Void) null);
             }
         });
-        startButton =  (Button) findViewById(R.id.start_stop_button);
-        startButton.setOnClickListener(new View.OnClickListener(){
+        startButton = (ImageButton) findViewById(R.id.start_stop_button);
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new StartTask().execute((Void)null);
+                new StartTask().execute((Void) null);
             }
         });
 
-        mUserDataView =findViewById(R.id.user_data);
+        mUserDataView = findViewById(R.id.user_data);
     }
 
     private void GetDataFromIntent() {
@@ -78,6 +79,22 @@ public class TrackingActivity extends AppCompatActivity {
                 }).create().show();
     }
 
+    public void OnStatusChanged(HeavenHR.TrackingState state) {
+        switch (state){
+            case CLOSED:
+                pauseButton.setImageResource(R.drawable.ic_pause_black_24dp);
+                startButton.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                break;
+            case PAUSED:
+                pauseButton.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                startButton.setImageResource(R.drawable.ic_stop_black_24dp);
+                break;
+            case RUNNING:
+                pauseButton.setImageResource(R.drawable.ic_pause_black_24dp);
+                startButton.setImageResource(R.drawable.ic_stop_black_24dp);
+        }
+    }
+
     public class StartTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
@@ -87,9 +104,10 @@ public class TrackingActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mUserDataView.setText(mHeaven.Status());
-            if(!success)
+            mUserDataView.setText(mHeaven.Status().name());
+            if (!success)
                 finishActivity(R.id.finishTrackingFailed);
+            OnStatusChanged(mHeaven.Status());
         }
 
         @Override
@@ -97,6 +115,7 @@ public class TrackingActivity extends AppCompatActivity {
 
         }
     }
+
     public class PauseTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
@@ -106,9 +125,10 @@ public class TrackingActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mUserDataView.setText(mHeaven.Status());
-            if(!success)
+            mUserDataView.setText(mHeaven.Status().name());
+            if (!success)
                 finishActivity(R.id.finishTrackingFailed);
+            OnStatusChanged(mHeaven.Status());
         }
 
         @Override
@@ -117,16 +137,17 @@ public class TrackingActivity extends AppCompatActivity {
         }
     }
 
-    public class TrackingTask extends AsyncTask<Void,Void,String>{
+    public class TrackingTask extends AsyncTask<Void, Void, HeavenHR.TrackingState> {
 
         @Override
-        protected String doInBackground(Void... voids) {
+        protected HeavenHR.TrackingState doInBackground(Void... voids) {
             return mHeaven.Track();
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            mUserDataView.setText(s);
+        protected void onPostExecute(HeavenHR.TrackingState s) {
+            mUserDataView.setText(s.name());
+            OnStatusChanged(s);
         }
     }
 }
