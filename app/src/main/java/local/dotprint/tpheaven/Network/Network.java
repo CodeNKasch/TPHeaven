@@ -48,6 +48,17 @@ public class Network {
         return client.newCall(request1).execute();
     }
 
+    public Response Option(String url) throws IOException
+    {
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .addHeader("Cookie", CookieString())
+                .method("OPTION",null)
+                .build();
+        return client.newCall(request).execute();
+    }
+
     public String CookieString() throws UnsupportedEncodingException {
         String cookieString = "";
         for (Cookie cookie : GetCookies()) {

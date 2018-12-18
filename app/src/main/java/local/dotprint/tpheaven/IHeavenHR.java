@@ -4,6 +4,6 @@ public interface IHeavenHR {
     boolean Login(String username, String password);
     boolean Pause();
     boolean Start();
-
-    StopWatchStatus GetStatus();
+    HeavenHR.TrackingState Track();
+    boolean GetWorkingTimes();
 }

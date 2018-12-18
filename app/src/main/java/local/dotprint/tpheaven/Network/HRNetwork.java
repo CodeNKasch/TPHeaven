@@ -26,6 +26,7 @@ public class HRNetwork extends Network {
                 "_username=" + URLEncode(username) + "&_password=" + URLEncode(password)
         );
         try {
+            Response response1 = Option(url);
             Response response = Post(url, body);
             return response.code() == 500;
         } catch (IOException e) {
@@ -53,6 +54,11 @@ public class HRNetwork extends Network {
 
     public String GetWorkingTimes(String JobID) {
         String url = "https://www.heavenhr.com/api/v1/workingtimes/overtime/saldo/summary/employee/" + JobID + "?endDate=2018-11-30";
+        try {
+            Response response = Get(url);
+            return response.body().string();
+        } catch (IOException e) {
+        }
         return "";
     }
 
@@ -119,6 +125,6 @@ public class HRNetwork extends Network {
 }
 
 /* GET https://www.heavenhr.com/api/v1/workingtimes/overtime/updates/?employeeJobId=_LUvMkrT5ogdK5NWq6HQ5Lg_&page=0&pageSize=25&sortBy=-compensationDate
-   GET https://api.heavenhr.com/api/v1/users/checkSessionIsExpired
 
+GET 2x https://api.heavenhr.com/api/v1/users/checkSessionIsExpired
  */

@@ -141,6 +141,7 @@ public class TrackingActivity extends AppCompatActivity {
 
         @Override
         protected HeavenHR.TrackingState doInBackground(Void... voids) {
+            mHeaven.GetWorkingTimes();
             return mHeaven.Track();
         }
 

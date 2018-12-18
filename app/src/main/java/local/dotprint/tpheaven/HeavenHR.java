@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import local.dotprint.tpheaven.Network.HRNetwork;
 import local.dotprint.tpheaven.Network.ParseableCookie;
 
@@ -48,12 +49,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
 
     @Override
     public boolean Login(String username, String password) {
-        boolean success = false;
-        for (int i = 0; i < 2; i++) {
-            success = network.Login(username, password);
-            if (success)
-                break;
-        }
+        boolean success = network.Login(username, password);
         if (success) {
             UserData = network.Authenticate();
             return true;
@@ -69,8 +65,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
                 JSONObject jobject = new JSONObject(body);
                 JSONArray data = (JSONArray) jobject.get("data");
                 Status = TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
 
             }
             return true;
@@ -86,8 +81,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
                 JSONObject jobject = new JSONObject(body);
                 JSONArray data = (JSONArray) jobject.get("data");
                 Status = TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
 
             }
             return true;
@@ -95,17 +89,16 @@ public class HeavenHR implements IHeavenHR, Parcelable {
             return false;
     }
 
-    public TrackingState Track(){
-        if(JobId != null && !JobId.trim().isEmpty())
-        {
+    @Override
+    public TrackingState Track() {
+        if (JobId != null && !JobId.trim().isEmpty()) {
             String body = network.TimeTracking(JobId);
             try {
                 JSONObject jobject = new JSONObject(body);
                 JSONArray data = (JSONArray) jobject.get("data");
                 Status = TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
 
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
                 return TrackingState.CLOSED;
             }
 
@@ -114,8 +107,38 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     }
 
     @Override
-    public StopWatchStatus GetStatus() {
-        return null;
+    public boolean GetWorkingTimes() {
+        if (JobId != null && !JobId.trim().isEmpty()) {
+            String body = network.GetWorkingTimes(JobId);
+            /*
+            TODO find correlation
+            saldo 13:55
+            beantragt 0
+            bewilligt 8:05
+            gearbeitet 6:05
+            abwesend  0:0
+            soll 8:00
+            freizeitausgleich 0:0
+            {"links":[],"data":[
+            {
+            "saldo":1133,
+            "absence":11520, / 12 / 60 (abwesend pro 30 tage)
+            "actual":101004,
+            "expected":111840,
+            "updated":449,
+            "compensated":0,
+            "jobId":113127
+            }]}
+             */
+            try {
+                JSONObject jobject = new JSONObject(body);
+                JSONArray data = (JSONArray) jobject.get("data");
+                //Status = TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
+                return true;
+            } catch (Exception e) {
+            }
+        }
+        return false;
     }
 
     @Override
@@ -130,21 +153,19 @@ public class HeavenHR implements IHeavenHR, Parcelable {
         dest.writeTypedArray(network.GetParseableCookies(), 0);
     }
 
-    public String GetJobId()
-    {
+    public String GetJobId() {
         try {
             JSONObject jobject = new JSONObject(UserData);
             JSONArray data = (JSONArray) jobject.get("data");
-            String jobId  =  data.getJSONObject(0).get("jobId").toString();
+            String jobId = data.getJSONObject(0).get("jobId").toString();
             return jobId;
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
 
         }
         return "";
     }
 
-    public TrackingState Status(){
+    public TrackingState Status() {
         return Status;
     }
 
