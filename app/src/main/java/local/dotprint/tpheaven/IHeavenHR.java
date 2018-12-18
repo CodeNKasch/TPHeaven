@@ -6,4 +6,5 @@ public interface IHeavenHR {
     boolean Start();
     HeavenHR.TrackingState Track();
     boolean GetWorkingTimes();
+    boolean WorkingTimeSummery();
 }

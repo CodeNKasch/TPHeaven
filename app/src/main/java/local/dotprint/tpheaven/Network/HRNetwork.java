@@ -1,6 +1,8 @@
 package local.dotprint.tpheaven.Network;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -105,6 +107,7 @@ public class HRNetwork extends Network {
 
     /**
      * Get Information about the Tracking status.
+     *
      * @param JobId
      * @return
      */
@@ -122,9 +125,25 @@ public class HRNetwork extends Network {
     }
 
 
+    public String WorkingTimeSummery(String JobId) {
+        String url = "https://api.heavenhr.com/api/v1/workingtimes/summary/%s?startDate=%s&endDate=%s";
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+        String uri = String.format(url, JobId, date,date);
+        try {
+            Response response = Get(uri);
+            if (response.code() == 200) {
+                return response.body().string();
+            }
+        } catch (Exception e) {
+            e.getCause();
+        }
+        return "";
+    }
 }
 
-/* GET https://www.heavenhr.com/api/v1/workingtimes/overtime/updates/?employeeJobId=_LUvMkrT5ogdK5NWq6HQ5Lg_&page=0&pageSize=25&sortBy=-compensationDate
+/* GET https://www.heavenhr.com/api/v1/workingtimes/overtime/updates/?employeeJobId=<JOBID>&page=0&pageSize=25&sortBy=-compensationDate
 
 GET 2x https://api.heavenhr.com/api/v1/users/checkSessionIsExpired
+
+GET https://api.heavenhr.com/api/v1/workingtimes/summary/<JOBID>?startDate=2018-12-18&endDate=2018-12-18
  */

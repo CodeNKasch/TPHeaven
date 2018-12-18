@@ -93,6 +93,12 @@ public class TrackingActivity extends AppCompatActivity {
                 pauseButton.setImageResource(R.drawable.ic_pause_black_24dp);
                 startButton.setImageResource(R.drawable.ic_stop_black_24dp);
         }
+        float total = (mHeaven.approved+mHeaven.requested);
+        float fhours = total /60;
+        int hours = (int)(fhours);
+        int minutes = (int)((fhours - hours)*60);
+        String text = "%s %02d:%02d";
+        mUserDataView.setText(String.format(text, state.name(), hours, minutes));
     }
 
     public class StartTask extends AsyncTask<Void, Void, Boolean> {
@@ -104,7 +110,6 @@ public class TrackingActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mUserDataView.setText(mHeaven.Status().name());
             if (!success)
                 finishActivity(R.id.finishTrackingFailed);
             OnStatusChanged(mHeaven.Status());
@@ -125,7 +130,6 @@ public class TrackingActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mUserDataView.setText(mHeaven.Status().name());
             if (!success)
                 finishActivity(R.id.finishTrackingFailed);
             OnStatusChanged(mHeaven.Status());
@@ -141,13 +145,13 @@ public class TrackingActivity extends AppCompatActivity {
 
         @Override
         protected HeavenHR.TrackingState doInBackground(Void... voids) {
-            mHeaven.GetWorkingTimes();
+            //mHeaven.GetWorkingTimes();
+            mHeaven.WorkingTimeSummery();
             return mHeaven.Track();
         }
 
         @Override
         protected void onPostExecute(HeavenHR.TrackingState s) {
-            mUserDataView.setText(s.name());
             OnStatusChanged(s);
         }
     }

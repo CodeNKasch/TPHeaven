@@ -18,6 +18,9 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     private String trackingUserId;
     private String trackingCompanyId;
 
+    public int approved = 0;
+    public int requested = 0;
+
     public String UserData = "";
 
     private HRNetwork network;
@@ -134,6 +137,26 @@ public class HeavenHR implements IHeavenHR, Parcelable {
                 JSONObject jobject = new JSONObject(body);
                 JSONArray data = (JSONArray) jobject.get("data");
                 //Status = TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
+                return true;
+            } catch (Exception e) {
+            }
+        }
+        return false;
+    }
+
+    public boolean WorkingTimeSummery()
+    {
+        if (JobId != null && !JobId.trim().isEmpty()) {
+            String body = network.WorkingTimeSummery(JobId);
+
+            try {
+                // no task running /*"data":[{"status":"APPROVED","total":485},{"status":"REQUESTED","total":0}]*/
+                JSONObject jobject = new JSONObject(body);
+                JSONArray data = (JSONArray) jobject.get("data");
+                String status1 = data.getJSONObject(0).get("status").toString();
+                approved = data.getJSONObject(0).getInt("total");
+                String status2 = data.getJSONObject(1).get("status").toString();
+                requested = data.getJSONObject(1).getInt("total");
                 return true;
             } catch (Exception e) {
             }
