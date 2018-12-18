@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Cookie;
@@ -61,6 +62,23 @@ public class Network {
 
     public void SetCookies(List<Cookie> cookies){
         cookieJar.saveFromResponse(null ,cookies);
+    }
+
+    public ParseableCookie[] GetParseableCookies(){
+        List<Cookie> cookies = GetCookies();
+        ParseableCookie[] parseableCookies = new ParseableCookie[cookies.size()];
+        for (Cookie cookie : cookies) {
+            parseableCookies[cookies.indexOf(cookie)] = new ParseableCookie(cookie);
+        }
+        return parseableCookies;
+    }
+
+    public void SetParseableCookies(ParseableCookie[] parseableCookies){
+        List<Cookie> cookies = new ArrayList<>();
+        for (ParseableCookie parcel : parseableCookies) {
+            cookies.add(parcel.cookie());
+        }
+        SetCookies(cookies);
     }
 
     public String URLEncode(String raw) {

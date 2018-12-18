@@ -5,13 +5,8 @@ import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import local.dotprint.tpheaven.Network.HRNetwork;
 import local.dotprint.tpheaven.Network.ParseableCookie;
-import okhttp3.Cookie;
 
 public class HeavenHR implements IHeavenHR, Parcelable {
 
@@ -22,7 +17,6 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     private String trackingUserId;
     private String trackingCompanyId;
 
-    private ParseableCookie[] parseableCookies;
     public String UserData = "";
 
     private HRNetwork network;
@@ -36,12 +30,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
         network = new HRNetwork();
         UserData = in.readString();
         Status = TrackingState.valueOf(in.readString());
-        parseableCookies = in.createTypedArray(ParseableCookie.CREATOR);
-        List<Cookie> cookies = new ArrayList<>();
-        for (ParseableCookie parcel : parseableCookies) {
-            cookies.add(parcel.cookie());
-        }
-        network.SetCookies(cookies);
+        network.SetParseableCookies(in.createTypedArray(ParseableCookie.CREATOR));
         JobId = GetJobId();
     }
 
@@ -138,12 +127,7 @@ public class HeavenHR implements IHeavenHR, Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(UserData);
         dest.writeString(Status.text);
-        List<Cookie> cookies = network.GetCookies();
-        parseableCookies = new ParseableCookie[cookies.size()];
-        for (Cookie cookie : cookies) {
-            parseableCookies[cookies.indexOf(cookie)] = new ParseableCookie(cookie);
-        }
-        dest.writeTypedArray(parseableCookies, 0);
+        dest.writeTypedArray(network.GetParseableCookies(), 0);
     }
 
     public String GetJobId()
