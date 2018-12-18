@@ -1,4 +1,4 @@
-package local.dotprint.tpheaven;
+package local.dotprint.tpheaven.Network;
 
 import java.util.ArrayList;
 import java.util.List;
