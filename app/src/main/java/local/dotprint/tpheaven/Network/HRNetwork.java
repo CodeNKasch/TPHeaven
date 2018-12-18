@@ -139,6 +139,19 @@ public class HRNetwork extends Network {
         }
         return "";
     }
+
+    public String CheckSessionIsExpired(){
+        String url = "https://api.heavenhr.com/api/v1/users/checkSessionIsExpired";
+        try {
+            Response response = Get(url);
+            if (response.code() == 200) {
+                return response.body().string();
+            }
+        } catch (Exception e) {
+            e.getCause();
+        }
+        return "";
+    }
 }
 
 /* GET https://www.heavenhr.com/api/v1/workingtimes/overtime/updates/?employeeJobId=<JOBID>&page=0&pageSize=25&sortBy=-compensationDate
@@ -146,4 +159,5 @@ public class HRNetwork extends Network {
 GET 2x https://api.heavenhr.com/api/v1/users/checkSessionIsExpired
 
 GET https://api.heavenhr.com/api/v1/workingtimes/summary/<JOBID>?startDate=2018-12-18&endDate=2018-12-18
+https://api.heavenhr.com/api/v1/jobs/_LUvMkrT5ogdK5NWq6HQ5Lg_/workingtimes/?pageSize=25&jobId=_LUvMkrT5ogdK5NWq6HQ5Lg_&workingTimeDate=[*,*]
  */

@@ -8,11 +8,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
-import java.io.Console;
 
 import local.dotprint.tpheaven.HeavenHR;
 import local.dotprint.tpheaven.R;
@@ -67,6 +64,13 @@ public class TrackingActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        new CheckSessionTask().execute((Void) null);
+        new HourTrackingTask().execute((Void)null);
+    }
+
+    @Override
     public void onBackPressed() {
         new AlertDialog.Builder(this)
                 .setTitle("Really Exit?")
@@ -80,7 +84,7 @@ public class TrackingActivity extends AppCompatActivity {
     }
 
     public void OnStatusChanged(HeavenHR.TrackingState state) {
-        switch (state){
+        switch (state) {
             case CLOSED:
                 pauseButton.setImageResource(R.drawable.ic_pause_black_24dp);
                 startButton.setImageResource(R.drawable.ic_play_arrow_black_24dp);
@@ -93,12 +97,19 @@ public class TrackingActivity extends AppCompatActivity {
                 pauseButton.setImageResource(R.drawable.ic_pause_black_24dp);
                 startButton.setImageResource(R.drawable.ic_stop_black_24dp);
         }
-        float total = (mHeaven.approved+mHeaven.requested);
-        float fhours = total /60;
-        int hours = (int)(fhours);
-        int minutes = (int)((fhours - hours)*60);
+        float total = (mHeaven.approved + mHeaven.requested);
+        float fhours = total / 60;
+        int hours = (int) (fhours);
+        int minutes = (int) ((fhours - hours) * 60);
         String text = "%s %02d:%02d";
         mUserDataView.setText(String.format(text, state.name(), hours, minutes));
+    }
+
+    public void finishTrackingActivity() {
+        Intent i = new Intent();
+        i.putExtra(getString(R.string.put_extra_user_data), mHeaven);
+        setResult(RESULT_CANCELED, i);
+        finish();
     }
 
     public class StartTask extends AsyncTask<Void, Void, Boolean> {
@@ -111,7 +122,7 @@ public class TrackingActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final Boolean success) {
             if (!success)
-                finishActivity(R.id.finishTrackingFailed);
+                finishTrackingActivity();
             OnStatusChanged(mHeaven.Status());
         }
 
@@ -131,7 +142,7 @@ public class TrackingActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final Boolean success) {
             if (!success)
-                finishActivity(R.id.finishTrackingFailed);
+                finishTrackingActivity();
             OnStatusChanged(mHeaven.Status());
         }
 
@@ -145,14 +156,44 @@ public class TrackingActivity extends AppCompatActivity {
 
         @Override
         protected HeavenHR.TrackingState doInBackground(Void... voids) {
-            //mHeaven.GetWorkingTimes();
-            mHeaven.WorkingTimeSummery();
             return mHeaven.Track();
         }
 
         @Override
         protected void onPostExecute(HeavenHR.TrackingState s) {
             OnStatusChanged(s);
+        }
+    }
+
+    public class CheckSessionTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            return mHeaven.CheckSessionIsExpired();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isExpired) {
+            super.onPostExecute(isExpired);
+            if (!isExpired)
+                return;
+            finishTrackingActivity();
+        }
+    }
+
+    public class HourTrackingTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            //mHeaven.GetWorkingTimes();
+            mHeaven.WorkingTimeSummery();
+            return (Void)null;
+        }
+
+        @Override
+        protected void onPostExecute(Void n) {
+            //tracking done mHeaven should have now the new properties
+            OnStatusChanged(mHeaven.Status());
         }
     }
 }

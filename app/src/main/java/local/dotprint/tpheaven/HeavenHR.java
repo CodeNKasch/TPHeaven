@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import local.dotprint.tpheaven.Network.HRNetwork;
 import local.dotprint.tpheaven.Network.ParseableCookie;
 
-public class HeavenHR implements IHeavenHR, Parcelable {
+public class HeavenHR implements Parcelable {
 
     private String JobId;
     private TrackingState Status;
@@ -50,7 +50,6 @@ public class HeavenHR implements IHeavenHR, Parcelable {
         }
     };
 
-    @Override
     public boolean Login(String username, String password) {
         boolean success = network.Login(username, password);
         if (success) {
@@ -60,7 +59,6 @@ public class HeavenHR implements IHeavenHR, Parcelable {
         return false;
     }
 
-    @Override
     public boolean Pause() {
         if (JobId != null && !JobId.trim().isEmpty()) {
             String body = network.TogglePause(JobId);
@@ -76,7 +74,6 @@ public class HeavenHR implements IHeavenHR, Parcelable {
             return false;
     }
 
-    @Override
     public boolean Start() {
         if (JobId != null && !JobId.trim().isEmpty()) {
             String body = network.ToggleStartStop(JobId);
@@ -92,7 +89,6 @@ public class HeavenHR implements IHeavenHR, Parcelable {
             return false;
     }
 
-    @Override
     public TrackingState Track() {
         if (JobId != null && !JobId.trim().isEmpty()) {
             String body = network.TimeTracking(JobId);
@@ -109,7 +105,6 @@ public class HeavenHR implements IHeavenHR, Parcelable {
         return Status;
     }
 
-    @Override
     public boolean GetWorkingTimes() {
         if (JobId != null && !JobId.trim().isEmpty()) {
             String body = network.GetWorkingTimes(JobId);
@@ -162,6 +157,19 @@ public class HeavenHR implements IHeavenHR, Parcelable {
             }
         }
         return false;
+    }
+
+    public boolean CheckSessionIsExpired()
+    {
+        try {/*{"links":[],"data":[{"isSessionExpired":false}]}*/
+            String body = network.CheckSessionIsExpired();
+            JSONObject jobject = new JSONObject(body);
+            JSONArray data = (JSONArray) jobject.get("data");
+            Boolean status1 = data.getJSONObject(0).getBoolean("isSessionExpired");
+            return status1;
+        }
+        catch (Exception e){}
+        return true;
     }
 
     @Override
