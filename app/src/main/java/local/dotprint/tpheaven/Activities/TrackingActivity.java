@@ -88,14 +88,20 @@ public class TrackingActivity extends AppCompatActivity {
             case CLOSED:
                 pauseButton.setImageResource(R.drawable.ic_pause_black_24dp);
                 startButton.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                pauseButton.setVisibility(View.GONE);
+                startButton.setVisibility(View.VISIBLE);
                 break;
             case PAUSED:
                 pauseButton.setImageResource(R.drawable.ic_play_arrow_black_24dp);
                 startButton.setImageResource(R.drawable.ic_stop_black_24dp);
+                pauseButton.setVisibility(View.VISIBLE);
+                startButton.setVisibility(View.GONE);
                 break;
             case RUNNING:
                 pauseButton.setImageResource(R.drawable.ic_pause_black_24dp);
                 startButton.setImageResource(R.drawable.ic_stop_black_24dp);
+                pauseButton.setVisibility(View.VISIBLE);
+                startButton.setVisibility(View.VISIBLE);
         }
         float total = (mHeaven.approved + mHeaven.requested);
         float fhours = total / 60;
