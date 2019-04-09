@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +21,7 @@ public class TrackingActivity extends AppCompatActivity {
     private ImageButton pauseButton;
     private ImageButton startButton;
     private TextView mUserDataView;
+    private boolean wantsToExit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,29 +68,29 @@ public class TrackingActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         new CheckSessionTask().execute((Void) null);
+        new TrackingTask().execute((Void) null);
         new HourTrackingTask().execute((Void)null);
-        new CheckSessionTask().execute((Void) null);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        new CheckSessionTask().execute((Void) null);
-        new HourTrackingTask().execute((Void)null);
-        new TrackingTask().execute((Void) null);
-    }
 
     @Override
     public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                .setTitle("Really Exit?")
-                .setMessage("Are you sure you want to exit?")
-                .setNegativeButton(android.R.string.no, null)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        TrackingActivity.super.onBackPressed();
+        if(wantsToExit)
+            TrackingActivity.super.onBackPressed();
+
+        View baseView = findViewById(R.id.tracking_content);
+        Snackbar.make(baseView, R.string.tap_exit_the_app, Snackbar.LENGTH_SHORT)
+                .show();
+
+        wantsToExit = true;
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+                        wantsToExit = false;
                     }
-                }).create().show();
+                },
+                1500);
+
     }
     public void OnTimeTrackingChanged(){
         String text = "%s %02d:%02d";
@@ -105,13 +107,13 @@ public class TrackingActivity extends AppCompatActivity {
     }
 
     public void OnStatusChanged(HeavenHR.TrackingState state) {
+        new HourTrackingTask().execute((Void)null);
         switch (state) {
             case CLOSED:
                 pauseButton.setImageResource(R.drawable.ic_pause_black_24dp);
                 startButton.setImageResource(R.drawable.ic_play_arrow_black_24dp);
                 pauseButton.setVisibility(View.GONE);
                 startButton.setVisibility(View.VISIBLE);
-                new HourTrackingTask().execute((Void)null);
                 break;
             case PAUSED:
                 pauseButton.setImageResource(R.drawable.ic_play_arrow_black_24dp);

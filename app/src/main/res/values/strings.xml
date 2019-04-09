@@ -20,4 +20,5 @@
     <string name="pref_passwd">PASSWORD</string>
     <string name="nulltext"></string>
     <string name="error_no_connection">Looks like you are not connected to the internet yet!</string>
+    <string name="tap_exit_the_app">"Tap again to exit the app."</string>
 </resources>
