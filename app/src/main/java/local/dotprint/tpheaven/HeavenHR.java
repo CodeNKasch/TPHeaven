@@ -131,6 +131,7 @@ public class HeavenHR implements Parcelable {
                 return true;
             } catch (Exception e) {
                 Log.e(this.getClass().getCanonicalName(), e.getMessage());
+                current = 0;
             }
         }
         return false;
