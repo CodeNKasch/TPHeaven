@@ -27,7 +27,6 @@ public class TrackingActivity extends AppCompatActivity {
         SetupUI();
         mHeaven = new HeavenHR();
         GetDataFromIntent();
-        new TrackingTask().execute((Void) null);
     }
 
     private void SetupUI() {
@@ -64,10 +63,19 @@ public class TrackingActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        new CheckSessionTask().execute((Void) null);
+        new HourTrackingTask().execute((Void)null);
+        new CheckSessionTask().execute((Void) null);
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         new CheckSessionTask().execute((Void) null);
         new HourTrackingTask().execute((Void)null);
+        new TrackingTask().execute((Void) null);
     }
 
     @Override
@@ -82,6 +90,19 @@ public class TrackingActivity extends AppCompatActivity {
                     }
                 }).create().show();
     }
+    public void OnTimeTrackingChanged(){
+        String text = "%s %02d:%02d";
+
+        Integer hours = mHeaven.total / 60;
+        Integer minutes =  (int)((((float) mHeaven.total / 60.0) - hours ) * 60.0);
+        mUserDataView.setText(String.format(text, mHeaven.Status().name(), hours, minutes));
+
+        float total = (mHeaven.approved + mHeaven.requested);
+        float fhours = total / 60;
+        hours = (int) (fhours);
+        minutes = (int) ((fhours - hours) * 60);
+        //mUserDataView.setText(String.format(text, mHeaven.Status().name(), hours, minutes));
+    }
 
     public void OnStatusChanged(HeavenHR.TrackingState state) {
         switch (state) {
@@ -90,6 +111,7 @@ public class TrackingActivity extends AppCompatActivity {
                 startButton.setImageResource(R.drawable.ic_play_arrow_black_24dp);
                 pauseButton.setVisibility(View.GONE);
                 startButton.setVisibility(View.VISIBLE);
+                new HourTrackingTask().execute((Void)null);
                 break;
             case PAUSED:
                 pauseButton.setImageResource(R.drawable.ic_play_arrow_black_24dp);
@@ -103,12 +125,6 @@ public class TrackingActivity extends AppCompatActivity {
                 pauseButton.setVisibility(View.VISIBLE);
                 startButton.setVisibility(View.VISIBLE);
         }
-        float total = (mHeaven.approved + mHeaven.requested);
-        float fhours = total / 60;
-        int hours = (int) (fhours);
-        int minutes = (int) ((fhours - hours) * 60);
-        String text = "%s %02d:%02d";
-        mUserDataView.setText(String.format(text, state.name(), hours, minutes));
     }
 
     public void finishTrackingActivity() {
@@ -191,15 +207,15 @@ public class TrackingActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            //mHeaven.GetWorkingTimes();
-            mHeaven.WorkingTimeSummery();
+            boolean hasTotal = mHeaven.GetWorkingTimes();
+            boolean hasSummery = mHeaven.WorkingTimeSummery();
             return (Void)null;
         }
 
         @Override
         protected void onPostExecute(Void n) {
             //tracking done mHeaven should have now the new properties
-            OnStatusChanged(mHeaven.Status());
+            OnTimeTrackingChanged();
         }
     }
 }

@@ -18,6 +18,7 @@ public class HeavenHR implements Parcelable {
     private String trackingUserId;
     private String trackingCompanyId;
 
+    public int total = 0;
     public int approved = 0;
     public int requested = 0;
 
@@ -131,7 +132,8 @@ public class HeavenHR implements Parcelable {
             try {
                 JSONObject jobject = new JSONObject(body);
                 JSONArray data = (JSONArray) jobject.get("data");
-                //Status = TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
+                String total  = data.getJSONObject(0).get("total").toString();
+                this.total = Integer.parseInt(total);
                 return true;
             } catch (Exception e) {
             }
