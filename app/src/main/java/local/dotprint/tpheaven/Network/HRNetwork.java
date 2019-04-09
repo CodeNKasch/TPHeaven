@@ -53,11 +53,21 @@ public class HRNetwork extends Network {
         return "";
     }
 
+    public String GetCurrentTime(String JobID)
+    {
+        String url = "https://www.heavenhr.com/time-tracking/ajax/stopwatch/job/"+JobID+"/current?";
+        try {
+            Response response = Get(url);
+            return response.body().string();
+        } catch (IOException e) {
+        }
+        return "";
+    }
 
     public String GetWorkingTimes(String JobID) {
         String today = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
         String url = "https://api.heavenhr.com/api/v1/workingtimes/totals?pageSize=25&page=0&jobId="+JobID+"&workingTimeDate=["+today+","+today+"]&sortBy=-date";
-        //String url = "https://www.heavenhr.com/api/v1/workingtimes/overtime/saldo/summary/employee/" + JobID + "?endDate=2018-11-30";
+        String url2 = "https://www.heavenhr.com/api/v1/workingtimes/overtime/saldo/summary/employee/" + JobID + "?endDate=2018-11-30";
         try {
             Response response = Get(url);
             return response.body().string();

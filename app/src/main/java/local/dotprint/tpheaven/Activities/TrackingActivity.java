@@ -8,9 +8,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import java.time.Duration;
+import java.util.Date;
+import java.util.logging.Logger;
 
 import local.dotprint.tpheaven.HeavenHR;
 import local.dotprint.tpheaven.R;
@@ -59,6 +64,7 @@ public class TrackingActivity extends AppCompatActivity {
         try {
             Intent intent = getIntent();
             mHeaven = intent.getParcelableExtra(getString(R.string.put_extra_user_data));
+            Log.d(this.getLocalClassName(), "GetDataFromIntent has data" );
         } catch (Exception e) {
             e.getCause();
         }
@@ -66,15 +72,16 @@ public class TrackingActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        Log.d(this.getLocalClassName(), "onResume " );
         super.onResume();
         new CheckSessionTask().execute((Void) null);
         new TrackingTask().execute((Void) null);
-        new HourTrackingTask().execute((Void)null);
     }
 
 
     @Override
     public void onBackPressed() {
+        Log.d(this.getLocalClassName(), "onBackPressed " + wantsToExit );
         if(wantsToExit)
             TrackingActivity.super.onBackPressed();
 
@@ -92,21 +99,22 @@ public class TrackingActivity extends AppCompatActivity {
                 1500);
 
     }
-    public void OnTimeTrackingChanged(){
+    public void OnTimeTrackingChanged() {
         String text = "%s %02d:%02d";
 
-        Integer hours = mHeaven.total / 60;
-        Integer minutes =  (int)((((float) mHeaven.total / 60.0) - hours ) * 60.0);
-        mUserDataView.setText(String.format(text, mHeaven.Status().name(), hours, minutes));
+        int d = (int)Duration.ofMillis(mHeaven.current).toMinutes();
+        int t = mHeaven.total;
+        int total =  t + d;
+        Integer totalHours = total / 60;
+        Integer totalMinutes = (int) ((((float) total / 60.0) - totalHours) * 60.0);
 
-        float total = (mHeaven.approved + mHeaven.requested);
-        float fhours = total / 60;
-        hours = (int) (fhours);
-        minutes = (int) ((fhours - hours) * 60);
-        //mUserDataView.setText(String.format(text, mHeaven.Status().name(), hours, minutes));
+        String userInfo = String.format(text, mHeaven.Status().name(), totalHours, totalMinutes);
+        mUserDataView.setText(userInfo);
+        Log.d(this.getLocalClassName(), "OnTimeTrackingChanged " + userInfo);
     }
 
     public void OnStatusChanged(HeavenHR.TrackingState state) {
+        Log.d(this.getLocalClassName(), "OnStatusChanged " + state.toString() );
         new HourTrackingTask().execute((Void)null);
         switch (state) {
             case CLOSED:
@@ -130,6 +138,7 @@ public class TrackingActivity extends AppCompatActivity {
     }
 
     public void finishTrackingActivity() {
+
         Intent i = new Intent();
         i.putExtra(getString(R.string.put_extra_user_data), mHeaven);
         setResult(RESULT_CANCELED, i);
@@ -210,7 +219,7 @@ public class TrackingActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             boolean hasTotal = mHeaven.GetWorkingTimes();
-            boolean hasSummery = mHeaven.WorkingTimeSummery();
+            boolean hasCurrent = mHeaven.GetCurrentTime();
             return (Void)null;
         }
 

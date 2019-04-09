@@ -2,9 +2,15 @@ package local.dotprint.tpheaven;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import local.dotprint.tpheaven.Network.HRNetwork;
 import local.dotprint.tpheaven.Network.ParseableCookie;
@@ -18,6 +24,7 @@ public class HeavenHR implements Parcelable {
     private String trackingUserId;
     private String trackingCompanyId;
 
+    public long current = 0;
     public int total = 0;
     public int approved = 0;
     public int requested = 0;
@@ -106,29 +113,32 @@ public class HeavenHR implements Parcelable {
         return Status;
     }
 
+    public boolean GetCurrentTime()
+    {
+        if (JobId != null && !JobId.trim().isEmpty()) {
+            String body = network.GetCurrentTime(JobId);
+            try {
+                JSONObject jobject = new JSONObject(body);
+                JSONArray data = (JSONArray) jobject.get("data");
+
+                String start  = data.getJSONObject(0).get("start").toString().replace("T"," ").replace("Z","");
+                String currentTime  = data.getJSONObject(0).get("currentTime").toString().replace("T"," ").replace("Z","");;
+
+                SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); // first example
+                long d1 = format1.parse( start ).getTime();
+                long d2 = format1.parse( currentTime).getTime();
+                current = d2 - d1;
+                return true;
+            } catch (Exception e) {
+                Log.e(this.getClass().getCanonicalName(), e.getMessage());
+            }
+        }
+        return false;
+    }
+
     public boolean GetWorkingTimes() {
         if (JobId != null && !JobId.trim().isEmpty()) {
             String body = network.GetWorkingTimes(JobId);
-            /*
-            TODO find correlation
-            saldo 13:55
-            beantragt 0
-            bewilligt 8:05
-            gearbeitet 6:05
-            abwesend  0:0
-            soll 8:00
-            freizeitausgleich 0:0
-            {"links":[],"data":[
-            {
-            "saldo":1133,
-            "absence":11520, / 12 / 60 (abwesend pro 30 tage)
-            "actual":101004,
-            "expected":111840,
-            "updated":449,
-            "compensated":0,
-            "jobId":113127
-            }]}
-             */
             try {
                 JSONObject jobject = new JSONObject(body);
                 JSONArray data = (JSONArray) jobject.get("data");
