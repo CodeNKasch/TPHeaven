@@ -100,17 +100,20 @@ public class TrackingActivity extends AppCompatActivity {
 
     }
     public void OnTimeTrackingChanged() {
+
         String text = "%s %02d:%02d";
-
-        int d = (int)Duration.ofMillis(mHeaven.current).toMinutes();
-        int t = mHeaven.total;
-        int total =  t + d;
-        Integer totalHours = total / 60;
-        Integer totalMinutes = (int) ((((float) total / 60.0) - totalHours) * 60.0);
-
-        String userInfo = String.format(text, mHeaven.Status().name(), totalHours, totalMinutes);
+        Duration d = CalculateTotalTime();
+        long hours   = d.toHours();
+        long minutes = d.minusHours(hours).toMinutes();
+        String userInfo = String.format(text, mHeaven.Status().name(),hours , minutes);
         mUserDataView.setText(userInfo);
         Log.d(this.getLocalClassName(), "OnTimeTrackingChanged " + userInfo);
+    }
+
+    private Duration CalculateTotalTime()
+    {
+        Duration ongoing = Duration.ofMillis(mHeaven.current);
+        return ongoing.plusMinutes(mHeaven.total);
     }
 
     public void OnStatusChanged(HeavenHR.TrackingState state) {
