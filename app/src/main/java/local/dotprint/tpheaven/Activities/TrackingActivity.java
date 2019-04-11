@@ -113,6 +113,7 @@ public class TrackingActivity extends AppCompatActivity {
     private Duration CalculateTotalTime()
     {
         Duration ongoing = Duration.ofMillis(mHeaven.current);
+        Log.d(this.getLocalClassName(), "Calculate Time current "+ String.valueOf(mHeaven.current) +" total " + String.valueOf(mHeaven.total));
         return ongoing.plusMinutes(mHeaven.total);
     }
 

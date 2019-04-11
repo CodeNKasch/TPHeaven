@@ -7,6 +7,7 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
@@ -119,15 +120,40 @@ public class HeavenHR implements Parcelable {
             String body = network.GetCurrentTime(JobId);
             try {
                 JSONObject jobject = new JSONObject(body);
-                JSONArray data = (JSONArray) jobject.get("data");
 
-                String start  = data.getJSONObject(0).get("start").toString().replace("T"," ").replace("Z","");
-                String currentTime  = data.getJSONObject(0).get("currentTime").toString().replace("T"," ").replace("Z","");;
+                JSONArray data = (JSONArray)TryGet(jobject,"data");
 
-                SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); // first example
-                long d1 = format1.parse( start ).getTime();
-                long d2 = format1.parse( currentTime).getTime();
-                current = d2 - d1;
+                if(data == null){
+                    current = 0;
+                    return true;
+                }
+
+                long totalPause = 0;
+                long totalWork = 0;
+
+                for (int i =0; i< data.length(); i++)
+                {
+                    JSONObject entry = TryGet(data,i);
+
+                    long start  = GetTime(TryGet(entry, "start"));
+                    long currentTime  = GetTime(TryGet(entry, "currentTime"));
+                    totalWork = totalWork + currentTime - start;
+
+                    JSONArray pauses = (JSONArray)TryGet(entry,"pauses");
+                    if(pauses != null)
+                        for ( int j = 0; j < pauses.length(); j++)
+                        {
+                            JSONObject pause = TryGet(pauses, j);
+
+                            long pStart = GetTime(TryGet(pause,"start"));
+                            long pEnd = GetTime(TryGet(pause,"end"));
+                            //long pDuration =  TryGet(pause,"duration");
+                            if(pEnd >0)
+                                totalPause = totalPause +  (pEnd-pStart);
+                            else
+                                totalPause = totalPause + currentTime - pStart;
+                        }
+                }
                 return true;
             } catch (Exception e) {
                 Log.e(this.getClass().getCanonicalName(), e.getMessage());
@@ -136,6 +162,44 @@ public class HeavenHR implements Parcelable {
         }
         return false;
     }
+
+
+    private Object TryGet(JSONObject o, String name)
+    {
+        try{
+            return o.get(name);
+        }
+        catch(Exception e)
+        {
+            return null;
+        }
+    }
+
+    private JSONObject TryGet(JSONArray a, int i)
+    {
+        try{
+            return a.getJSONObject(i);
+        }catch(Exception e)
+        {
+            return null;
+        }
+    }
+
+    private long GetTime(Object heavenHRTime) {
+        if(heavenHRTime == null)
+            return 0;
+        String cropted = heavenHRTime.toString().replace("T"," ").replace("Z","");
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        try {
+            return format1.parse(cropted).getTime();
+        }
+        catch(ParseException e)
+        {
+            Log.e(this.getClass().getSimpleName(), "GetTime - Could not parse Date" + heavenHRTime);
+        }
+        return 0;
+    }
+
 
     public boolean GetWorkingTimes() {
         if (JobId != null && !JobId.trim().isEmpty()) {
