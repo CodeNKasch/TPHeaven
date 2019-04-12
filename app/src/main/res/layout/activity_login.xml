@@ -22,7 +22,7 @@
 
     <ScrollView
         android:id="@+id/login_form"
-        android:layout_width="366dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
@@ -45,9 +45,11 @@
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <EditText
                     android:id="@+id/password"
                     android:layout_width="match_parent"
@@ -60,15 +62,16 @@
                     android:maxLines="1"
                     android:singleLine="true" />
             </android.support.design.widget.TextInputLayout>
+
             <TextView
                 android:id="@+id/error_view"
-                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:visibility="invisible"
-                android:text="@string/nulltext"
+                android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:text="@string/nulltext"
                 android:textColor="@color/error"
-            />
+                android:visibility="invisible" />
+
             <Button
                 android:id="@+id/email_sign_in_button"
                 style="?android:textAppearanceSmall"
