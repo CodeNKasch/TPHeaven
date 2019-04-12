@@ -71,13 +71,7 @@ public class HeavenHR implements Parcelable {
     public boolean Pause() {
         if (JobId != null && !JobId.trim().isEmpty()) {
             String body = network.TogglePause(JobId);
-            try {
-                JSONObject jobject = new JSONObject(body);
-                JSONArray data = (JSONArray) jobject.get("data");
-                Status = TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
-            } catch (Exception e) {
-
-            }
+            Status = GetStatus(body);
             return true;
         } else
             return false;
@@ -86,13 +80,7 @@ public class HeavenHR implements Parcelable {
     public boolean Start() {
         if (JobId != null && !JobId.trim().isEmpty()) {
             String body = network.ToggleStartStop(JobId);
-            try {
-                JSONObject jobject = new JSONObject(body);
-                JSONArray data = (JSONArray) jobject.get("data");
-                Status = TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
-            } catch (Exception e) {
-
-            }
+            Status = GetStatus(body);
             return true;
         } else
             return false;
@@ -101,17 +89,19 @@ public class HeavenHR implements Parcelable {
     public TrackingState Track() {
         if (JobId != null && !JobId.trim().isEmpty()) {
             String body = network.TimeTracking(JobId);
-            try {
-                JSONObject jobject = new JSONObject(body);
-                JSONArray data = (JSONArray) jobject.get("data");
-                Status = TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
-
-            } catch (Exception e) {
-                return TrackingState.CLOSED;
-            }
-
+            Status = GetStatus(body);
         }
         return Status;
+    }
+
+    private TrackingState GetStatus(String Json){
+        try {
+            JSONObject jobject = new JSONObject(Json);
+            JSONArray data = (JSONArray) jobject.get("data");
+            return TrackingState.valueOf(data.getJSONObject(0).get("status").toString());
+        } catch (Exception e) {
+            return TrackingState.CLOSED;
+        }
     }
 
     public boolean GetCurrentTime()
@@ -145,15 +135,28 @@ public class HeavenHR implements Parcelable {
                         {
                             JSONObject pause = TryGet(pauses, j);
 
+                            Object duration = TryGet(pause,"duration");
+                            if(duration != null){
+                                try {
+                                    int pDuration = Integer.parseInt(duration.toString());
+                                    totalPause = totalPause + Duration.ofMinutes(pDuration).toMillis();
+                                    continue;
+                                }
+                                catch(Exception e)
+                                {}
+                            }
+
                             long pStart = GetTime(TryGet(pause,"start"));
                             long pEnd = GetTime(TryGet(pause,"end"));
-                            //long pDuration =  TryGet(pause,"duration");
+                            long pausetime = 0;
                             if(pEnd >0)
-                                totalPause = totalPause +  (pEnd-pStart);
+                                pausetime =  (pEnd-pStart);
                             else
-                                totalPause = totalPause + currentTime - pStart;
+                                pausetime =  currentTime - pStart;
+                            totalPause = totalPause + pausetime;
                         }
                 }
+                current = totalWork - totalPause;
                 return true;
             } catch (Exception e) {
                 Log.e(this.getClass().getCanonicalName(), e.getMessage());
@@ -211,6 +214,7 @@ public class HeavenHR implements Parcelable {
                 this.total = Integer.parseInt(total);
                 return true;
             } catch (Exception e) {
+                total = 0;
             }
         }
         return false;
