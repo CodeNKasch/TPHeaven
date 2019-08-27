@@ -125,9 +125,9 @@ public class HeavenHR implements Parcelable {
                 {
                     JSONObject entry = TryGet(data,i);
 
-                    long start  = GetTime(TryGet(entry, "start"));
-                    long currentTime  = GetTime(TryGet(entry, "currentTime"));
-                    totalWork = totalWork + currentTime - start;
+                    Date start  = GetTime(TryGet(entry, "start"));
+                    Date currentTime  = GetTime(TryGet(entry, "currentTime"));
+                    totalWork =  currentTime.getTime() +totalWork  - start.getTime();
 
                     JSONArray pauses = (JSONArray)TryGet(entry,"pauses");
                     if(pauses != null)
@@ -146,13 +146,13 @@ public class HeavenHR implements Parcelable {
                                 {}
                             }
 
-                            long pStart = GetTime(TryGet(pause,"start"));
-                            long pEnd = GetTime(TryGet(pause,"end"));
+                            Date pStart = GetTime(TryGet(pause,"start"));
+                            Date pEnd = GetTime(TryGet(pause,"end"));
                             long pausetime = 0;
-                            if(pEnd >0)
-                                pausetime =  (pEnd-pStart);
+                            if(pEnd != null && pStart != null)
+                                pausetime =  (pEnd.getTime()-pStart.getTime());
                             else
-                                pausetime =  currentTime - pStart;
+                                pausetime =  currentTime.getTime() - pStart.getTime();
                             totalPause = totalPause + pausetime;
                         }
                 }
@@ -188,19 +188,19 @@ public class HeavenHR implements Parcelable {
         }
     }
 
-    private long GetTime(Object heavenHRTime) {
+    private Date GetTime(Object heavenHRTime) {
         if(heavenHRTime == null)
-            return 0;
+            return null;
         String cropted = heavenHRTime.toString().replace("T"," ").replace("Z","");
-        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
         try {
-            return format1.parse(cropted).getTime();
+            return format1.parse(cropted);
         }
         catch(ParseException e)
         {
             Log.e(this.getClass().getSimpleName(), "GetTime - Could not parse Date" + heavenHRTime);
         }
-        return 0;
+        return null;
     }
 
 
